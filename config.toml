@@ -1,0 +1,3 @@
+[files]
+log_file = "data/output.log"
+output_file = "data/outages.csv"
