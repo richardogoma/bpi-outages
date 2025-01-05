@@ -1,6 +1,8 @@
 import csv
+from prefect import task
 
 
+@task(tags=["bpi", "dev"])
 def save_outages(outages, output_path):
     """Save outage data to a CSV file."""
     try:
