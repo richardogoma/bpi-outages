@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 from heapq import nlargest
+from prefect import task
 
 
+@task(tags=["bpi", "dev"])
 def display_outages(outages):
     st.title("Outage Visualization")
     st.write("Longest Outages")

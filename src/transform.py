@@ -1,7 +1,9 @@
 import re
 from datetime import datetime, timedelta
+from prefect import task
 
 
+@task(tags=["bpi", "dev"])
 def extract_timestamps(log_data):
     """Extract timestamps from log data."""
     pattern = r"Inserted Bitcoin rates as at (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2})"
@@ -16,6 +18,7 @@ def round_to_minute(dt):
     )
 
 
+@task(tags=["bpi", "dev"])
 def calculate_outages(timestamps, threshold=timedelta(minutes=1)):
     """Identify gaps exceeding the threshold."""
     rounded_timestamps = [round_to_minute(ts) for ts in timestamps]
@@ -24,4 +27,12 @@ def calculate_outages(timestamps, threshold=timedelta(minutes=1)):
         gap = rounded_timestamps[i] - rounded_timestamps[i - 1]
         if gap > threshold:
             outages.append((rounded_timestamps[i - 1], rounded_timestamps[i], gap))
+    return outages
+
+
+@task(tags=["bpi", "dev"])
+def transform_log_data(log_data):
+    timestamps = extract_timestamps(log_data)
+    outages = calculate_outages(timestamps)
+    print(f"Identified {len(outages)} outages.")
     return outages
