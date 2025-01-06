@@ -12,7 +12,7 @@ local_file_system_block = LocalFileSystem.load("config-file")
 fs = local_file_system_block.basepath
 
 # Load configurations
-with open(f"{fs}\config.toml", "rb") as f:
+with open(os.path.join(fs, "config.toml"), "rb") as f:
     config = tomllib.load(f)
 log_file = config["files"]["log_file"]
 output_file = config["files"]["output_file"]
