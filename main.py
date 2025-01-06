@@ -1,4 +1,3 @@
-import os
 import tomllib
 from src.extract import read_log
 from src.transform import transform_log_data
