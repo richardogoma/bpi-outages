@@ -3,44 +3,32 @@ import tomllib
 from src.extract import read_log
 from src.transform import transform_log_data
 from src.load import save_outages
-# from src.visualize import display_outages
+from src.visualize import display_outages
 from prefect import flow
-# from prefect.filesystems import LocalFileSystem
+from prefect.filesystems import LocalFileSystem
 
 
-# local_file_system_block = LocalFileSystem.load("config-file")
-# os.chdir(local_file_system_block.basepath)
+local_file_system_block = LocalFileSystem.load("config-file")
+fs = local_file_system_block.basepath
 
 # Load configurations
-with open("config.toml", "rb") as f:
+with open(f"{fs}\config.toml", "rb") as f:
     config = tomllib.load(f)
 log_file = config["files"]["log_file"]
 output_file = config["files"]["output_file"]
 
 
 @flow(name="BPI ETL Pipeline")
-def main():
-    log_data = read_log(log_file)
+def run_etl_pipeline(source: str, target: str, visualize: bool = False):
+    log_data = read_log(source)
 
     outages = transform_log_data(log_data)
 
-    save_outages(outages, output_file)
+    save_outages(outages, target)
 
-    # show_visual = (
-    #     input("Do you want to display the outages visualization? (y/n): ")
-    #     .strip()
-    #     .lower()
-    # )
-    # if show_visual == "y":
-    #     display_outages(outages)
+    if visualize:
+        display_outages(outages)
 
 
 if __name__ == "__main__":
-    main.serve(
-        name="bpi-etl-pipeline",
-        tags=["bpi", "dev"],
-        pause_on_shutdown=False,
-        interval=300,
-        version="0.1.1",
-        description="ETL pipeline for BPI data",
-    )
+    run_etl_pipeline(source=log_file, target=output_file)
