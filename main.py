@@ -21,11 +21,11 @@ output_file = config["files"]["output_file"]
 def run_etl_pipeline(
     source: str = log_file, target: str = output_file, visualize: bool = False
 ):
-    log_data = read_log(source)
+    log_data = read_log(f"{fs}\{source}")
 
     outages = transform_log_data(log_data)
 
-    save_outages(outages, target)
+    save_outages(outages, f"{fs}\{target}")
 
     if visualize:
         display_outages(outages)
