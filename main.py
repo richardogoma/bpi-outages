@@ -18,7 +18,9 @@ output_file = config["files"]["output_file"]
 
 
 @flow(name="BPI ETL Pipeline")
-def run_etl_pipeline(source: str, target: str, visualize: bool = False):
+def run_etl_pipeline(
+    source: str = log_file, target: str = output_file, visualize: bool = False
+):
     log_data = read_log(source)
 
     outages = transform_log_data(log_data)
